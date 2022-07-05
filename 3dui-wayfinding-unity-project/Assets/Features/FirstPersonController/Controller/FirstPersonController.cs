@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -88,6 +89,14 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     {
         // Ensures the first frame counts as "grounded".
         _characterController.Move(-stickToGroundForceMagnitude * transform.up);
+        
+        // Move Inputs flip the view at the start. Hacky solution by not applying move input first couple of frames.
+        StartCoroutine(StartDelayed());
+    }
+
+    private IEnumerator StartDelayed()
+    {
+        yield return new WaitForSeconds(0.1f);
 
         // synchronize the jump stream with the update rate
         var jumpLatch = LatchObservables.Latch(this.UpdateAsObservable(), firstPersonControllerInput.Jump, false);
