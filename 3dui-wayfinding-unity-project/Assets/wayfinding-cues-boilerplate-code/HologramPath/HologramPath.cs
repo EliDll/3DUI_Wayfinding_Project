@@ -6,25 +6,29 @@ using UnityEngine.AI;
 
 public class HologramPath : MonoBehaviour
 {
-    [Header("Marker Configuration")]
-    [SerializeField] private GameObject[] markers;
-    [SerializeField] private Vector3 inactivePosition;
-    [SerializeField] private float markerDistance = 5.0f;
-    [SerializeField] private int skipAFewMarkers = 2;
     [Header("Agents Configuration")]
     [SerializeField] private Transform player;
     [SerializeField] private Transform target;
-    [SerializeField] private float hologramHeightCorrection = 3;
+
+    [Header("Colliders Configuration")]
+    [SerializeField] private GameObject[] colliders;
+    [SerializeField] private float colliderCutoff;
+    [SerializeField] private float colliderOffset;
+    [SerializeField] private Vector3 inactivePosition = Vector3.zero;
+    [SerializeField] private float heightOffset;
+    [SerializeField] private float colliderHeight;
+    [SerializeField] private float colliderWidth;
+
 
     private NavMeshPath _currentPath;
     private NavMeshAgent _navAgent;
-    private Vector3 hologramCorrVec;
+    private Vector3 _colliderTransformCorrection;
 
     // Start is called before the first frame update
     private void Start()
     {
         _currentPath = new NavMeshPath();
-        hologramCorrVec = new Vector3(0.0f, hologramHeightCorrection, 0.0f);
+        _colliderTransformCorrection = new Vector3(0.0f,heightOffset,0.0f);
     }
 
     // Update is called once per frame
@@ -51,46 +55,77 @@ public class HologramPath : MonoBehaviour
             return;
         }
 
-        var potentialMarkerPositions = new List<Vector3>();
-        var rest = 0.0f;
-        var from = Vector3.zero;
-        var to = Vector3.zero;
+        Vector3 from;
+        Vector3 to;
+        Vector3 segVec;
+        Vector3 offsetVec;
 
-        //loop over path pairs (i,i+1)
+        float segLen;
+        float collLen;
+
+        float lenAcc = 0;
+        int iColl = 0;
+
         for (int i = 0; i < path.Length-1; i++)
         {
-            from = path[i];
-            to = path[i + 1];
-            float len = Vector3.Distance(from, to);
-            float accumulatedDistance = len + rest;
+            if(iColl < colliders.Length)
+            {
+                from = path[i];
+                to = path[i + 1];
+                segLen = Vector3.Distance(from, to);
+                segVec = to - from;
+                lenAcc += segLen;
+                var targetColl = colliders[iColl];
 
-            // from + (to - from).normalized = direction vector
-            // 
-            if(accumulatedDistance > markerDistance)
-            {
-                float lineSegment = markerDistance - rest;
-                potentialMarkerPositions.Add(from + (to - from).normalized * lineSegment);
-                rest = len - lineSegment;
-            }
-            else
-            {
-                // overwrite accumulator
-                rest = accumulatedDistance;
+                //first & last collider
+                if (lenAcc > colliderOffset && lenAcc - segLen < colliderOffset && lenAcc > colliderCutoff && lenAcc - segLen < colliderCutoff)
+                {
+                    // remainder of colliderOffset belonging to this segment
+                    float startOffset = colliderOffset - (lenAcc - segLen);
+                    // remaining valid length for this segment
+                    float maxLen = (colliderCutoff - (lenAcc - segLen)) - startOffset;
+                    offsetVec = Vector3.Normalize(segVec) * (startOffset + maxLen / 2.0f);
+                    collLen = maxLen;
+                }
+                //first collider
+                else if(lenAcc > colliderOffset && lenAcc - segLen < colliderOffset)
+                {
+                    float validLen = lenAcc - colliderOffset; // guaranteed to be < len and > 0
+                    offsetVec = Vector3.Normalize(segVec) * (segLen - validLen / 2.0f);
+                    collLen = validLen; // update scale len
+                }
+                //last collider
+                else if (lenAcc > colliderCutoff && lenAcc - segLen < colliderCutoff)
+                {
+                    float maxLen = colliderCutoff - (lenAcc - segLen);
+                    offsetVec = Vector3.Normalize(segVec) * (maxLen / 2.0f);
+                    collLen = maxLen; // update scale len
+                }
+                // middle collider
+                else if(lenAcc > colliderOffset && lenAcc < colliderCutoff)
+                {
+                    offsetVec = segVec / 2.0f;
+                    collLen = segLen;
+                }
+                else
+                {
+                    // ignore this path segment as it is either entirely too close or too far
+                    continue;
+                }
+
+                targetColl.transform.localScale = new Vector3(colliderWidth, colliderHeight, collLen);
+                targetColl.transform.position = from + offsetVec;
+                targetColl.transform.LookAt(to);
+                // do world coord. frame corrections after rotation
+                targetColl.transform.position += _colliderTransformCorrection;
+                iColl++;
             }
         }
 
-        for(int i = 0; i < markers.Length; i++)
+        // reset all colliders that are not needed
+        for (int j = iColl; j < colliders.Length; j++)
         {
-            int skipIndex = i + skipAFewMarkers;
-            if (potentialMarkerPositions.Count > skipIndex)
-            {
-                markers[i].transform.position = potentialMarkerPositions[skipIndex];
-                markers[i].transform.position += hologramCorrVec;
-            }
-            else
-            {
-                markers[i].transform.position = inactivePosition;
-            }
+            colliders[j].transform.position = inactivePosition;
         }
     }
 }
