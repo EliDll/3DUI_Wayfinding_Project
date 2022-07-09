@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.AI;
+using UniRx;
+using UniRx.Triggers;
 
 public class HologramPath : MonoBehaviour
 {
@@ -19,11 +21,21 @@ public class HologramPath : MonoBehaviour
     [SerializeField] private float colliderHeight;
     [SerializeField] private float colliderWidth;
 
+    private ReactiveProperty<float> _correctnessScale;
+    
+    public ReactiveProperty<float> CorrectnessScale => _correctnessScale;
+    
+    private float _cornerCutOff = 5f;
 
     private NavMeshPath _currentPath;
     private NavMeshAgent _navAgent;
     private Vector3 _colliderTransformCorrection;
 
+    private void Awake()
+    {
+        _correctnessScale = new ReactiveProperty<float>(1.0f);
+    }
+    
     // Start is called before the first frame update
     private void Start()
     {
@@ -43,6 +55,7 @@ public class HologramPath : MonoBehaviour
         if (playerNavMeshPos.hit && targetNavMeshPos.hit && NavMesh.CalculatePath(playerNavMeshPos.position, targetNavMeshPos.position, NavMesh.AllAreas, _currentPath))
         {
             UpdateHologramMarkers(_currentPath.corners);
+            UpdateCorectnessScale(_currentPath.corners);
             for (int i = 0; i < _currentPath.corners.Length - 1; i++)
                 Debug.DrawLine(_currentPath.corners[i], _currentPath.corners[i + 1], Color.red);
         }
@@ -127,5 +140,32 @@ public class HologramPath : MonoBehaviour
         {
             colliders[j].transform.position = inactivePosition;
         }
+    }
+
+    private void UpdateCorectnessScale(Vector3[] path)
+    {
+        Vector3 targetPoint;
+
+        if (path.Length < 2)
+        {
+            targetPoint = target.position;
+        }
+
+        Vector3 firstCorner = path[0];
+        Vector3 secondCorner = path[1];
+        float dist = Vector3.Distance(player.position, firstCorner);
+        
+        if (dist < _cornerCutOff)
+        {
+            targetPoint = Vector3.Lerp(secondCorner, firstCorner, dist / _cornerCutOff);
+        }
+        else
+        {
+            targetPoint = firstCorner;
+        }
+
+        Vector3 targetDirection = targetPoint - player.position;
+        targetDirection.y = 0;
+        _correctnessScale.Value = Vector3.Dot(player.forward, targetDirection.normalized) * 0.5f + 0.5f;
     }
 }
