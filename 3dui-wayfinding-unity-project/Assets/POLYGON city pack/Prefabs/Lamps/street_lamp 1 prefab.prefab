@@ -276,3 +276,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetObject: {fileID: 1238479184688626}
+  light: {fileID: 108374899102069224}
+  maxIntensity: 8
+  minIntensity: 0
