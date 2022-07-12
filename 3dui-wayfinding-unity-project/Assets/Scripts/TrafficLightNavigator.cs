@@ -34,10 +34,12 @@ namespace Navigator
         public override void ChangeDirection(Direction direction)
         {
             // Yellow light before changing
-            StartCoroutine(YellowTimer(() =>
+            base.ChangeDirection(direction);
+
+            /*StartCoroutine(YellowTimer(() =>
             {
                 base.ChangeDirection(direction);
-            }));
+            }));*/
         }
 
         protected override void GoStraight()
