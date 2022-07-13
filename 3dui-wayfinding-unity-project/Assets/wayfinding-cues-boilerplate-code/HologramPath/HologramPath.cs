@@ -1,13 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Enums;
 using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.AI;
 using UniRx;
 using UniRx.Triggers;
-using Utils;
 
 public class HologramPath : MonoBehaviour
 {
@@ -26,9 +23,6 @@ public class HologramPath : MonoBehaviour
 
     private ReactiveProperty<float> _correctnessScale;
     
-    public Dictionary<Vector3, Direction> PathDirections { get; private set; } 
-        = new Dictionary<Vector3, Direction>(new Vector3Comparer(0.1f));
-
     public ReactiveProperty<float> CorrectnessScale => _correctnessScale;
     
     private float _cornerCutOff = 5f;
@@ -62,43 +56,8 @@ public class HologramPath : MonoBehaviour
         {
             UpdateHologramMarkers(_currentPath.corners);
             UpdateCorectnessScale(_currentPath.corners);
-            UpdatePathDirections(_currentPath.corners);
             for (int i = 0; i < _currentPath.corners.Length - 1; i++)
                 Debug.DrawLine(_currentPath.corners[i], _currentPath.corners[i + 1], Color.red);
-        }
-    }
-
-    private void UpdatePathDirections(Vector3[] path)
-    {
-        if (path.Length < 2)
-        {
-            return;
-        }
-        
-        PathDirections = new Dictionary<Vector3, Direction>(new Vector3Comparer(0.1f))
-        {
-            [path[0]] = Direction.Straight,
-            [path[^1]] = Direction.Straight
-        };
-
-        for (int i = 0; i < path.Length - 2; i++)
-        {
-            Vector3 first = path[i];
-            Vector3 middle = path[i + 1];
-            Vector3 last = path[i + 2];
-
-            float angle = Utils.Utils.AngleSigned(first - middle, last - middle, Vector3.up);
-    
-            // angle is between -180 to 180. We can say if it is between -150 to -60 i is a right turn and 30 to 150 a left turn.
-            // and other cases there are no turn
-            Direction direction = angle switch
-            {
-                > -150 and < -30 => Direction.Right,
-                > 30 and < 150 => Direction.Left,
-                _ => Direction.Straight
-            };
-
-            PathDirections[middle] = direction;
         }
     }
 
@@ -208,21 +167,5 @@ public class HologramPath : MonoBehaviour
         Vector3 targetDirection = targetPoint - player.position;
         targetDirection.y = 0;
         _correctnessScale.Value = Vector3.Dot(player.forward, targetDirection.normalized) * 0.5f + 0.5f;
-    }
-
-    public Tuple<Vector3,Direction> GetClosestPathNodeAndDirectionForPosition(Vector3 position)
-    {
-        float closestDist = Single.PositiveInfinity;
-        Vector3 closestPos = Vector3.zero;
-
-        foreach (var corner in _currentPath.corners)
-        {
-            if (Vector3.Distance(position, corner) < closestDist)
-            {
-                closestPos = corner;
-                closestDist = Vector3.Distance(position, corner);
-            }
-        }
-        return new Tuple<Vector3, Direction>(closestPos, PathDirections[closestPos]);
     }
 }

@@ -19,18 +19,9 @@ namespace Navigator
 
         protected virtual void Start()
         {
-            ResetToDefault();
+            ChangeDirection(currentDirection);
         }
-
-        protected void OnTriggerEnter(Collider other)
-        {
-            //ChangeDirection(Direction.Right);
-        }
-
-        protected void OnTriggerExit(Collider other)
-        {
-            //ResetToDefault();
-        }
+        
 
         public virtual void ChangeDirection(Direction direction)
         {

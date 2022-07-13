@@ -10,8 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7966972372819451346}
   - component: {fileID: 335343140}
-  - component: {fileID: 7160702486557825675}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: TrafficLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,20 +51,6 @@ MonoBehaviour:
   Green: {fileID: 2516374052704601287}
   Yellow: {fileID: 7355686508732742319}
   Red: {fileID: 2541173674044984527}
---- !u!136 &7160702486557825675
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8506850300658106552}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 2
-  m_Height: 7
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4243948537537685952
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -183,7 +168,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 1c800ce1570ad664e9cf285b124960d2, type: 2}
+      objectReference: {fileID: 2100000, guid: f70ca80dbcfec7949b5294df1fa0f05e, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5f7d01160719c840a6b1e3014440235, type: 3}
 --- !u!114 &2541173674044984527 stripped
@@ -321,7 +306,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: bf78bfcc964a6fe4fa8c1d43d3aee11c, type: 2}
+      objectReference: {fileID: 2100000, guid: 22f326cc282bdea47806440e77f1c94b, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5f7d01160719c840a6b1e3014440235, type: 3}
 --- !u!114 &2516374052704601287 stripped
@@ -469,7 +454,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: d1e90c92975037a45b824bfbe3f7ec98, type: 2}
+      objectReference: {fileID: 2100000, guid: f70ca80dbcfec7949b5294df1fa0f05e, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f5f7d01160719c840a6b1e3014440235, type: 3}
 --- !u!4 &1803375932878692727 stripped
