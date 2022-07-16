@@ -14,21 +14,27 @@ public class PlayerNavigatorCheck : MonoBehaviour
     {
         foreach (var nav in SearchForNearNavigators())
         {
-            var posAndDir = hologramPath.GetClosestPathNodeAndDirectionForPosition(nav.transform.position);
-            Vector3 nearestCorner = posAndDir.Item1;
-            Direction nearestCornerDirection = posAndDir.Item2;
-            if (Vector3.Distance(nav.transform.position, nearestCorner) > maxDistanceToCorner)
+            var closestPathNode = hologramPath.FindClosestPathNodeForPosition(nav.transform.position, nav.transform.forward);
+
+            Direction direction = closestPathNode.pathAngle switch
             {
-                // if there is no corner near, just make it straight
-                nav.ChangeDirection(Direction.Straight);
-            }
-            else
+                > -45 and < 45 => Direction.Back,
+                > 45 and < 135 => Direction.Right,
+                > -135 and < -45 => Direction.Left,
+                _ => Direction.Straight
+            };
+            float distanceToCorner = Vector3.Distance(nav.transform.position, closestPathNode.position);
+            if (distanceToCorner > maxDistanceToCorner)
             {
-                nav.ChangeDirection(nearestCornerDirection);
+                // if there is no corner near or the closest corner is target, we need to use pos angle
+                direction = closestPathNode.posAngle switch
+                {
+                    > -90 and < 90 => Direction.Back,
+                    _ => Direction.Straight
+                };
             }
-            
-            // TODO: Change direction according to local direction of navigator
-            // TODO: Change direction according to position of player. (being back)
+
+            nav.ChangeDirection(direction);
         }
     }
 

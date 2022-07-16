@@ -9,6 +9,21 @@ using UniRx;
 using UniRx.Triggers;
 using Utils;
 
+public struct PathNode
+{
+    public Vector3 position;
+    // angle of the Vector from this node to next on the path.
+    public float pathAngle;
+    // angle between navigator position and closest corner
+    public float posAngle;
+
+    public PathNode(Vector3 position, float pathAngle, float posAngle)
+    {
+        this.position = position;
+        this.pathAngle = pathAngle;
+        this.posAngle = posAngle;
+    }
+}
 public class HologramPath : MonoBehaviour
 {
     [Header("Agents Configuration")]
@@ -62,46 +77,11 @@ public class HologramPath : MonoBehaviour
         {
             UpdateHologramMarkers(_currentPath.corners);
             UpdateCorectnessScale(_currentPath.corners);
-            UpdatePathDirections(_currentPath.corners);
             for (int i = 0; i < _currentPath.corners.Length - 1; i++)
                 Debug.DrawLine(_currentPath.corners[i], _currentPath.corners[i + 1], Color.red);
         }
     }
-
-    private void UpdatePathDirections(Vector3[] path)
-    {
-        if (path.Length < 2)
-        {
-            return;
-        }
-        
-        PathDirections = new Dictionary<Vector3, Direction>(new Vector3Comparer(0.1f))
-        {
-            [path[0]] = Direction.Straight,
-            [path[^1]] = Direction.Straight
-        };
-
-        for (int i = 0; i < path.Length - 2; i++)
-        {
-            Vector3 first = path[i];
-            Vector3 middle = path[i + 1];
-            Vector3 last = path[i + 2];
-
-            float angle = Utils.Utils.AngleSigned(first - middle, last - middle, Vector3.up);
     
-            // angle is between -180 to 180. We can say if it is between -150 to -60 i is a right turn and 30 to 150 a left turn.
-            // and other cases there are no turn
-            Direction direction = angle switch
-            {
-                > -150 and < -30 => Direction.Right,
-                > 30 and < 150 => Direction.Left,
-                _ => Direction.Straight
-            };
-
-            PathDirections[middle] = direction;
-        }
-    }
-
     private void UpdateHologramMarkers(Vector3[] path)
     {
         if (path.Length < 2)
@@ -210,19 +190,50 @@ public class HologramPath : MonoBehaviour
         _correctnessScale.Value = Vector3.Dot(player.forward, targetDirection.normalized) * 0.5f + 0.5f;
     }
 
-    public Tuple<Vector3,Direction> GetClosestPathNodeAndDirectionForPosition(Vector3 position)
+    public PathNode FindClosestPathNodeForPosition(Vector3 position, Vector3 forward)
     {
         float closestDist = Single.PositiveInfinity;
-        Vector3 closestPos = Vector3.zero;
+        int closestPosIx = 0;
+        PathNode pathNode = new PathNode(Vector3.zero, 0, 0);
 
-        foreach (var corner in _currentPath.corners)
+        if (_currentPath.corners.Length == 0)
         {
+            return pathNode;
+        }
+        
+        for (int cornerIx = 0; cornerIx < _currentPath.corners.Length; cornerIx++)
+        {
+            Vector3 corner = _currentPath.corners[cornerIx];
             if (Vector3.Distance(position, corner) < closestDist)
             {
-                closestPos = corner;
+                closestPosIx = cornerIx;
                 closestDist = Vector3.Distance(position, corner);
             }
         }
-        return new Tuple<Vector3, Direction>(closestPos, PathDirections[closestPos]);
+
+        pathNode.position = _currentPath.corners[closestPosIx];
+        pathNode.posAngle = Utils.Utils.AngleSigned(position, pathNode.position, forward);
+
+        if (closestPosIx == 0)
+        {
+            // we are not interested in the angle of the first vector
+            closestPosIx++;
+        }
+        
+        if (closestPosIx >= _currentPath.corners.Length - 1)
+        {
+            // closest corner is the target, direction can be assigned directly.
+            pathNode.pathAngle = pathNode.posAngle;
+            return pathNode;
+        }
+
+        Vector3 first = _currentPath.corners[closestPosIx];
+        Vector3 last = _currentPath.corners[closestPosIx + 1];
+
+
+        // Angle is calculated on xz plane.
+        pathNode.pathAngle = Utils.Utils.AngleSigned(first, last, forward);
+
+        return pathNode;
     }
 }

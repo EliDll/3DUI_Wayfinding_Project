@@ -6,13 +6,21 @@ namespace Utils
 {
     public static class Utils
     {
-        public static float AngleSigned(Vector3 v1, Vector3 v2, Vector3 n)
+        // on xz plane
+        public static float AngleSigned(Vector3 v1, Vector3 v2, Vector3 forward)
         {
-            return Mathf.Atan2(
-                Vector3.Dot(n, Vector3.Cross(v1, v2)),
-                Vector3.Dot(v1, v2)) * Mathf.Rad2Deg;
+            float forwardAngle = Mathf.Atan2(-forward.z, forward.x) * Mathf.Rad2Deg;
+            float globalAngle = Mathf.Atan2(v1.z - v2.z, v1.x - v2.x) * Mathf.Rad2Deg;
+
+            // base to 0-360 -> modulo by 360 -> rebase to -180 to 180
+            return mod((int)forwardAngle + globalAngle + 180, 360) - 180;
+        }
+        public static float mod(float x, float m) {
+            return (x%m + m)%m;
         }
     }
+    
+   
     
     // Vector 3 Comparison class. Used for using Vector3 as key in Dictionaries.
     public class Vector3Comparer : IEqualityComparer<Vector3>

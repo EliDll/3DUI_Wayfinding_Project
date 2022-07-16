@@ -96,7 +96,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
     private IEnumerator StartDelayed()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(1f);
 
         // synchronize the jump stream with the update rate
         var jumpLatch = LatchObservables.Latch(this.UpdateAsObservable(), firstPersonControllerInput.Jump, false);
