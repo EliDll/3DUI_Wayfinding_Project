@@ -18,6 +18,12 @@ namespace Navigator
             // base calls ChangeDirection. Must be at the end
             base.Start();
         }
+        
+        // Don't do anything in update. It's handled by the parent.
+        protected override void Update()
+        {
+            
+        }
 
         protected override void TurnBack()
         {

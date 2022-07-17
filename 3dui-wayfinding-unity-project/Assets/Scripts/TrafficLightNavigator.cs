@@ -18,18 +18,6 @@ namespace Navigator
             _time = Time.time;
 
         }
-        private void Update()
-        {
-            //test: change every 6 secs
-            if (Keyboard.current.tKey.isPressed && Time.time - _time > 1f)
-            {
-                _time = Time.time;
-                currentDirection = (Direction)(((int)currentDirection + 1) % 4);
-                Debug.Log(currentDirection);
-                ChangeDirection(currentDirection);
-                _time = Time.time;
-            }
-        }
 
         public override void ChangeDirection(Direction direction)
         {

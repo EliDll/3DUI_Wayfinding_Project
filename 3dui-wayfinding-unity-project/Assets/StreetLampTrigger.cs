@@ -25,7 +25,7 @@ public class StreetLampTrigger : MonoBehaviour
     void Update()
     {
 
-    }
+    } 
 
     private void OnTriggerEnter(Collider other)
     {

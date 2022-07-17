@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Enums;
+using PathFinder;
 using UnityEditor.Build.Content;
 using UnityEngine;
 using UnityEngine.AI;
@@ -9,26 +10,8 @@ using UniRx;
 using UniRx.Triggers;
 using Utils;
 
-public struct PathNode
-{
-    public Vector3 position;
-    // angle of the Vector from this node to next on the path.
-    public float pathAngle;
-    // angle between navigator position and closest corner
-    public float posAngle;
-
-    public PathNode(Vector3 position, float pathAngle, float posAngle)
-    {
-        this.position = position;
-        this.pathAngle = pathAngle;
-        this.posAngle = posAngle;
-    }
-}
 public class HologramPath : MonoBehaviour
 {
-    [Header("Agents Configuration")]
-    [SerializeField] private Transform player;
-    [SerializeField] private Transform target;
 
     [Header("Colliders Configuration")]
     [SerializeField] private GameObject[] colliders;
@@ -38,18 +21,15 @@ public class HologramPath : MonoBehaviour
     [SerializeField] private float heightOffset;
     [SerializeField] private float colliderHeight;
     [SerializeField] private float colliderWidth;
+    
+    private Transform player;
+    private Transform target;
 
     private ReactiveProperty<float> _correctnessScale;
-    
-    public Dictionary<Vector3, Direction> PathDirections { get; private set; } 
-        = new Dictionary<Vector3, Direction>(new Vector3Comparer(0.1f));
-
     public ReactiveProperty<float> CorrectnessScale => _correctnessScale;
     
     private float _cornerCutOff = 5f;
 
-    private NavMeshPath _currentPath;
-    private NavMeshAgent _navAgent;
     private Vector3 _colliderTransformCorrection;
 
     private void Awake()
@@ -60,26 +40,28 @@ public class HologramPath : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        _currentPath = new NavMeshPath();
         _colliderTransformCorrection = new Vector3(0.0f,heightOffset,0.0f);
+        player = PathFinderManager.Instance.player;
+        target = PathFinderManager.Instance.target;
     }
 
-    // Update is called once per frame
-    private void Update()
+    private void OnEnable()
     {
-        NavMeshHit playerNavMeshPos;
-        NavMeshHit targetNavMeshPos;
+        PathFinder.PathFinderManager.Instance.CurrentPathChangedEvent += HandleCurrentPathChanged;
+    }
 
-        NavMesh.SamplePosition(player.position, out playerNavMeshPos, 6.0f, NavMesh.AllAreas);
-        NavMesh.SamplePosition(target.position, out targetNavMeshPos, 6.0f, NavMesh.AllAreas);
-
-        if (playerNavMeshPos.hit && targetNavMeshPos.hit && NavMesh.CalculatePath(playerNavMeshPos.position, targetNavMeshPos.position, NavMesh.AllAreas, _currentPath))
-        {
-            UpdateHologramMarkers(_currentPath.corners);
-            UpdateCorectnessScale(_currentPath.corners);
-            for (int i = 0; i < _currentPath.corners.Length - 1; i++)
-                Debug.DrawLine(_currentPath.corners[i], _currentPath.corners[i + 1], Color.red);
-        }
+    private void OnDisable()
+    {
+        PathFinder.PathFinderManager.Instance.CurrentPathChangedEvent -= HandleCurrentPathChanged;
+    }
+    
+    private void HandleCurrentPathChanged()
+    {
+        Vector3[] corners = PathFinderManager.Instance.CurrentPath.corners;
+        UpdateHologramMarkers(corners);
+        UpdateCorectnessScale(corners);
+        for (int i = 0; i < corners.Length - 1; i++)
+            Debug.DrawLine(corners[i], corners[i + 1], Color.red);
     }
     
     private void UpdateHologramMarkers(Vector3[] path)
@@ -161,6 +143,7 @@ public class HologramPath : MonoBehaviour
         {
             colliders[j].transform.position = inactivePosition;
         }
+
     }
 
     private void UpdateCorectnessScale(Vector3[] path)
@@ -188,52 +171,5 @@ public class HologramPath : MonoBehaviour
         Vector3 targetDirection = targetPoint - player.position;
         targetDirection.y = 0;
         _correctnessScale.Value = Vector3.Dot(player.forward, targetDirection.normalized) * 0.5f + 0.5f;
-    }
-
-    public PathNode FindClosestPathNodeForPosition(Vector3 position, Vector3 forward)
-    {
-        float closestDist = Single.PositiveInfinity;
-        int closestPosIx = 0;
-        PathNode pathNode = new PathNode(Vector3.zero, 0, 0);
-
-        if (_currentPath.corners.Length == 0)
-        {
-            return pathNode;
-        }
-        
-        for (int cornerIx = 0; cornerIx < _currentPath.corners.Length; cornerIx++)
-        {
-            Vector3 corner = _currentPath.corners[cornerIx];
-            if (Vector3.Distance(position, corner) < closestDist)
-            {
-                closestPosIx = cornerIx;
-                closestDist = Vector3.Distance(position, corner);
-            }
-        }
-
-        pathNode.position = _currentPath.corners[closestPosIx];
-        pathNode.posAngle = Utils.Utils.AngleSigned(position, pathNode.position, forward);
-
-        if (closestPosIx == 0)
-        {
-            // we are not interested in the angle of the first vector
-            closestPosIx++;
-        }
-        
-        if (closestPosIx >= _currentPath.corners.Length - 1)
-        {
-            // closest corner is the target, direction can be assigned directly.
-            pathNode.pathAngle = pathNode.posAngle;
-            return pathNode;
-        }
-
-        Vector3 first = _currentPath.corners[closestPosIx];
-        Vector3 last = _currentPath.corners[closestPosIx + 1];
-
-
-        // Angle is calculated on xz plane.
-        pathNode.pathAngle = Utils.Utils.AngleSigned(first, last, forward);
-
-        return pathNode;
     }
 }
