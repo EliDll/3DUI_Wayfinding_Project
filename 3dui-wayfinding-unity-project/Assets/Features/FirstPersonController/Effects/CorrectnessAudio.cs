@@ -19,7 +19,7 @@ public class CorrectnessAudio : MonoBehaviour
     
     private float _intensityChangeSpeed = 0.1f;
 
-    private float _startPitch = 2f;
+    private float _startPitch = 1f;
 
     private float _lowPitch = 0.5f;
     

@@ -9,6 +9,8 @@ public class StreetLampTrigger : MonoBehaviour
     [SerializeField] private Light light;
     [SerializeField] private float maxIntensity = 1;
     [SerializeField] private float minIntensity = 0;
+    [SerializeField] private float fadeInDuration = 1;
+    [SerializeField] private float fadeOutDuration = 2;
 
     // flags to only run latest triggered coroutine
     bool stopFadeOut = false;
@@ -31,14 +33,14 @@ public class StreetLampTrigger : MonoBehaviour
     {
         stopFadeOut = true;
         stopFadeIn = false;
-        this.StartCoroutine(fadeIn(1));
+        this.StartCoroutine(fadeIn(fadeInDuration));
     }
 
     private void OnTriggerExit(Collider other)
     {
         stopFadeIn = true;
         stopFadeOut = false;
-        this.StartCoroutine(fadeOut(2));
+        this.StartCoroutine(fadeOut(fadeOutDuration));
     }
 
     IEnumerator fadeIn(float duration)
