@@ -16,19 +16,29 @@ public class CorrectnessPostEffects : MonoBehaviour
     private ICharacterSignals _characterSignals;
     [SerializeField] private Volume _volume;
 
+	private int _minSaturation = -50;
+	private int _maxSaturation = 0;
+
     private float _intensityChangeSpeed = 0.1f;
     private Vignette _vignette;
+	private ColorAdjustments _colorAdjustments;
     
     // Start is called before the first frame update
     void Start()
     {
         _volume.profile.TryGet<Vignette>(out _vignette);
+        _volume.profile.TryGet<ColorAdjustments>(out _colorAdjustments);
         _vignette.intensity.value = 0f;
+		_colorAdjustments.saturation.value = _maxSaturation;
         _characterSignals.Moved.Subscribe(w =>
         {
-            float scaledCorrectness = (1.0f - _hologramPath.CorrectnessScale.Value) * 0.5f;
-            _vignette.intensity.value = Mathf.Lerp(_vignette.intensity.value, scaledCorrectness,
+            float newVignette = (1.0f - _hologramPath.CorrectnessScale.Value) * 0.5f;
+            _vignette.intensity.value = Mathf.Lerp(_vignette.intensity.value, newVignette,
                 w.magnitude * _intensityChangeSpeed);
+			int newSaturation = (int)Mathf.Lerp(_minSaturation, _maxSaturation, _hologramPath.CorrectnessScale.Value);
+			_colorAdjustments.saturation.value = Mathf.Lerp(_colorAdjustments.saturation.value, newSaturation,
+                w.magnitude * _intensityChangeSpeed);
+
         }).AddTo(this);
     }
 
