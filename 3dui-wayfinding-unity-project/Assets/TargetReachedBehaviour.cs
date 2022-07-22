@@ -21,7 +21,6 @@ public class TargetReachedBehaviour : MonoBehaviour
     {
         if(other.gameObject.transform == TargetPool.Instance.currentTargetTransform)
         {
-            Debug.Log("player collision w/ target");
             TargetPool.Instance.OnTargetReached();
         }
     }

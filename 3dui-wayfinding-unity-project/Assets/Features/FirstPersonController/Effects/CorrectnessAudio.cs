@@ -12,7 +12,7 @@ public class CorrectnessAudio : MonoBehaviour
     [SerializeField]
     private GameObject characterSignalsInterfaceTarget;
     [SerializeField]
-    private NavigationPath _hologramPath;
+    private HologramPath _hologramPath;
     private ICharacterSignals _characterSignals;
     
     [SerializeField] private AudioSource _audioSource;

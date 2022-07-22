@@ -19,7 +19,6 @@ public class TargetPool : Singleton<TargetPool>
     public void OnTargetReached()
     {
         currentTargetIndex = (currentTargetIndex + 1) % targets.Length;
-        Debug.Log("Change target to" + currentTargetIndex);
         currentTargetTransform = targets[currentTargetIndex].transform;
         ToggleTargets();
     }

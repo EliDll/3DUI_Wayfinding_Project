@@ -47,7 +47,7 @@ namespace Navigator
 
         protected virtual void Update()
         {
-            UpdateActivision();
+            UpdateActivation();
         }
 
         private void HandleCurrentPathChanged()
@@ -55,7 +55,7 @@ namespace Navigator
             UpdateDirectionOfNavigator();
         }
         
-        private void UpdateActivision()
+        private void UpdateActivation()
         {
             float dist = Vector3.Distance(_player.position, transform.position);
             
@@ -165,7 +165,6 @@ namespace Navigator
         #region Virtual Functions
         public virtual void ChangeDirection(Direction direction)
         {
-            ResetToDefault();
             switch (direction)
             {
                 case Direction.Straight:
