@@ -12,7 +12,7 @@ public class CorrectnessPostEffects : MonoBehaviour
     [SerializeField]
     private GameObject characterSignalsInterfaceTarget;
     [SerializeField]
-    private HologramPath _hologramPath;
+    private NavigationPath _hologramPath;
     private ICharacterSignals _characterSignals;
     [SerializeField] private Volume _volume;
 
