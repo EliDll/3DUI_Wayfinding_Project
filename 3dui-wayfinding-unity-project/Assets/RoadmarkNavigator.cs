@@ -13,7 +13,7 @@ namespace Navigator
         [SerializeField] private Material goStraightMaterial;
         [SerializeField] private Material turnBackMaterial;
         [SerializeField] private Material defaultMaterial;
-        [SerializeField] private double throttleInterval;
+        [SerializeField] private double throttleInterval = 1;
 
         private bool cooldown = false;
         private double timeAcc = 0;

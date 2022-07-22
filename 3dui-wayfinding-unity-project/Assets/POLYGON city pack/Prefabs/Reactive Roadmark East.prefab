@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1189607564113976, guid: 8e03c81bd030d824c99304a858b8a18c, type: 3}
       propertyPath: m_Name
-      value: Reactive Roadmark East (1)
+      value: Reactive Roadmark East
       objectReference: {fileID: 0}
     - target: {fileID: 1976627502874630, guid: 8e03c81bd030d824c99304a858b8a18c, type: 3}
       propertyPath: m_Layer
@@ -75,6 +75,11 @@ PrefabInstance:
         type: 3}
       propertyPath: currentDirection
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 533247480521831139, guid: 8e03c81bd030d824c99304a858b8a18c,
+        type: 3}
+      propertyPath: throttleInterval
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 533247480521831139, guid: 8e03c81bd030d824c99304a858b8a18c,
         type: 3}
