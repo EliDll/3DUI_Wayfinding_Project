@@ -32,13 +32,20 @@ public class CorrectnessPostEffects : MonoBehaviour
 		_colorAdjustments.saturation.value = _maxSaturation;
         _characterSignals.Moved.Subscribe(w =>
         {
-            float newVignette = (1.0f - _hologramPath.CorrectnessScale.Value) * 0.5f;
-            _vignette.intensity.value = Mathf.Lerp(_vignette.intensity.value, newVignette,
-                w.magnitude * _intensityChangeSpeed);
-			int newSaturation = (int)Mathf.Lerp(_minSaturation, _maxSaturation, _hologramPath.CorrectnessScale.Value);
-			_colorAdjustments.saturation.value = Mathf.Lerp(_colorAdjustments.saturation.value, newSaturation,
-                w.magnitude * _intensityChangeSpeed);
-
+            if (_characterSignals.IsEffects.Value)
+            {
+                float newVignette = (1.0f - _hologramPath.CorrectnessScale.Value) * 0.4f;
+                _vignette.intensity.value = Mathf.Lerp(_vignette.intensity.value, newVignette,
+                    w.magnitude * _intensityChangeSpeed);
+                int newSaturation = (int)Mathf.Lerp(_minSaturation, _maxSaturation, _hologramPath.CorrectnessScale.Value);
+                _colorAdjustments.saturation.value = Mathf.Lerp(_colorAdjustments.saturation.value, newSaturation,
+                    w.magnitude * _intensityChangeSpeed);
+            }
+        }).AddTo(this);
+        _characterSignals.IsEffects.Where(isEffects => isEffects == false).Subscribe(_ =>
+        {
+            _vignette.intensity.value = 0f;
+            _colorAdjustments.saturation.value = _maxSaturation;
         }).AddTo(this);
     }
 

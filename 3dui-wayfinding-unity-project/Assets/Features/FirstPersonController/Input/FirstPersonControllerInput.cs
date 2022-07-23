@@ -27,4 +27,10 @@ public abstract class FirstPersonControllerInput : MonoBehaviour
     ///     Interaction type: continuous axes.
     /// </summary>
     public abstract IObservable<Vector2> Look { get; }
+    
+    /// <summary>
+    ///     Enable effects on/off button
+    ///     nteraction type: Trigger.
+    /// </summary>
+    public abstract IObservable<Unit> EnableEffects { get; }
 }

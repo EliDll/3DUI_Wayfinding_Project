@@ -41,6 +41,10 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     // side effects for camera bob
     private Subject<Vector3> _moved;
     public IObservable<Vector3> Moved => _moved;
+    
+    // side effects for navigation
+    private ReactiveProperty<bool> _isEffects;
+    public ReactiveProperty<bool> IsEffects => _isEffects;
 
     private ReactiveProperty<bool> _isRunning;
     public ReactiveProperty<bool> IsRunning => _isRunning;
@@ -67,6 +71,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
 
         // initialize effects
         _isRunning = new ReactiveProperty<bool>(false);
+        _isEffects = new ReactiveProperty<bool>(true);
 
         _moved = new Subject<Vector3>().AddTo(this);
         _landed = new Subject<Unit>().AddTo(this);
@@ -105,6 +110,11 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         firstPersonControllerInput.Move.Zip(jumpLatch, (move, jump) => new MoveInputData(move, jump)).Subscribe(HandleMotion).AddTo(this);
 
         firstPersonControllerInput.Look.Where(v => v != Vector2.zero).Subscribe(HandleLook).AddTo(this);
+
+        firstPersonControllerInput.EnableEffects.Subscribe(s =>
+        {
+            _isEffects.Value = !_isEffects.Value;
+        }).AddTo(this);
     }
 
     private void HandleMotion(MoveInputData i)

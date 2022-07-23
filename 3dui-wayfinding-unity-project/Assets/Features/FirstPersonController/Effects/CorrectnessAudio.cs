@@ -28,9 +28,17 @@ public class CorrectnessAudio : MonoBehaviour
     {
         _characterSignals.Moved.Subscribe(w =>
         {
-            float scaledCorrectness = (_hologramPath.CorrectnessScale.Value * (_startPitch - _lowPitch)) + _lowPitch;
-            _audioSource.pitch = Mathf.Lerp(_audioSource.pitch, scaledCorrectness,
-                w.magnitude * _intensityChangeSpeed);
+            if (_characterSignals.IsEffects.Value)
+            {
+                float scaledCorrectness =
+                    (_hologramPath.CorrectnessScale.Value * (_startPitch - _lowPitch)) + _lowPitch;
+                _audioSource.pitch = Mathf.Lerp(_audioSource.pitch, scaledCorrectness,
+                    w.magnitude * _intensityChangeSpeed);
+            }
+        }).AddTo(this);
+        _characterSignals.IsEffects.Where(isEffects => isEffects == false).Subscribe(_ =>
+        {
+            _audioSource.pitch = _startPitch;
         }).AddTo(this);
     }
 

@@ -18,6 +18,8 @@ public class InputActionBasedFirstPersonControllerInput : FirstPersonControllerI
     public override ReadOnlyReactiveProperty<bool> Run => _run;
     private ReadOnlyReactiveProperty<bool> _run;
 
+    public override IObservable<Unit> EnableEffects => _enableEffects;
+    private Subject<Unit> _enableEffects;
 
     [Header("Look Properties")]
     [SerializeField] private float lookSmoothingFactor = 14.0f;
@@ -66,6 +68,11 @@ public class InputActionBasedFirstPersonControllerInput : FirstPersonControllerI
         _jump = new Subject<Unit>().AddTo(this);
         _controls.Character.Jump.performed += context => {
             _jump.OnNext(Unit.Default);
+        };
+        
+        _enableEffects = new Subject<Unit>().AddTo(this);
+        _controls.Character.EnableEffects.performed += context => {
+            _enableEffects.OnNext(Unit.Default);
         };
     }
 }

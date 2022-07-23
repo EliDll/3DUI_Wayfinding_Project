@@ -62,6 +62,15 @@ public partial class @FirstPersonInputAction : IInputActionCollection2, IDisposa
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""EnableEffects"",
+                    ""type"": ""Button"",
+                    ""id"": ""89b73c3a-b2ce-4054-bbfe-894249a749f0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -306,6 +315,28 @@ public partial class @FirstPersonInputAction : IInputActionCollection2, IDisposa
                     ""action"": ""Run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""afb3c644-37f4-4f8d-9b34-9d6bb0599fa5"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EnableEffects"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""115e31b1-8aea-4597-aa92-83fd9ea817c7"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EnableEffects"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -346,6 +377,7 @@ public partial class @FirstPersonInputAction : IInputActionCollection2, IDisposa
         m_Character_Look = m_Character.FindAction("Look", throwIfNotFound: true);
         m_Character_Jump = m_Character.FindAction("Jump", throwIfNotFound: true);
         m_Character_Run = m_Character.FindAction("Run", throwIfNotFound: true);
+        m_Character_EnableEffects = m_Character.FindAction("EnableEffects", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -409,6 +441,7 @@ public partial class @FirstPersonInputAction : IInputActionCollection2, IDisposa
     private readonly InputAction m_Character_Look;
     private readonly InputAction m_Character_Jump;
     private readonly InputAction m_Character_Run;
+    private readonly InputAction m_Character_EnableEffects;
     public struct CharacterActions
     {
         private @FirstPersonInputAction m_Wrapper;
@@ -417,6 +450,7 @@ public partial class @FirstPersonInputAction : IInputActionCollection2, IDisposa
         public InputAction @Look => m_Wrapper.m_Character_Look;
         public InputAction @Jump => m_Wrapper.m_Character_Jump;
         public InputAction @Run => m_Wrapper.m_Character_Run;
+        public InputAction @EnableEffects => m_Wrapper.m_Character_EnableEffects;
         public InputActionMap Get() { return m_Wrapper.m_Character; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -438,6 +472,9 @@ public partial class @FirstPersonInputAction : IInputActionCollection2, IDisposa
                 @Run.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnRun;
                 @Run.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnRun;
                 @Run.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnRun;
+                @EnableEffects.started -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnableEffects;
+                @EnableEffects.performed -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnableEffects;
+                @EnableEffects.canceled -= m_Wrapper.m_CharacterActionsCallbackInterface.OnEnableEffects;
             }
             m_Wrapper.m_CharacterActionsCallbackInterface = instance;
             if (instance != null)
@@ -454,6 +491,9 @@ public partial class @FirstPersonInputAction : IInputActionCollection2, IDisposa
                 @Run.started += instance.OnRun;
                 @Run.performed += instance.OnRun;
                 @Run.canceled += instance.OnRun;
+                @EnableEffects.started += instance.OnEnableEffects;
+                @EnableEffects.performed += instance.OnEnableEffects;
+                @EnableEffects.canceled += instance.OnEnableEffects;
             }
         }
     }
@@ -482,5 +522,6 @@ public partial class @FirstPersonInputAction : IInputActionCollection2, IDisposa
         void OnLook(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+        void OnEnableEffects(InputAction.CallbackContext context);
     }
 }
