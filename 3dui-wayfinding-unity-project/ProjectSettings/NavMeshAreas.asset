@@ -16,7 +16,7 @@ NavMeshProjectSettings:
   - name: Road
     cost: 1.5
   - name: Grass
-    cost: 3
+    cost: 1.5
   - name: BuildingEntrance
     cost: 1.5
   - name: WalkWay
