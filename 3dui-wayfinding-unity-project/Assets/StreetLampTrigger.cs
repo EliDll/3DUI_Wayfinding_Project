@@ -12,6 +12,10 @@ public class StreetLampTrigger : MonoBehaviour
     [SerializeField] private float fadeInDuration = 1;
     [SerializeField] private float fadeOutDuration = 2;
 
+    [SerializeField] private Material onMaterial;
+    [SerializeField] private Material offMaterial;
+    [SerializeField] private MeshRenderer meshRenderer;
+
     // flags to only run latest triggered coroutine
     bool stopFadeOut = false;
     bool stopFadeIn = false;
@@ -29,11 +33,25 @@ public class StreetLampTrigger : MonoBehaviour
 
     } 
 
+    private void setOnTexture()
+    {
+        Material[] mats = meshRenderer.materials;
+        meshRenderer.materials = new Material[] { mats[0], onMaterial };
+    }
+
+    private void setOffTexture()
+    {
+        Material[] mats = meshRenderer.materials;
+        meshRenderer.materials = new Material[] { mats[0], offMaterial };
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         stopFadeOut = true;
         stopFadeIn = false;
         this.StartCoroutine(fadeIn(fadeInDuration));
+        setOnTexture();
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -79,5 +97,6 @@ public class StreetLampTrigger : MonoBehaviour
 
             yield return null;
         }
+        setOffTexture();
     }
 }

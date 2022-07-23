@@ -64,6 +64,11 @@ MonoBehaviour:
   light: {fileID: 108630166504307290}
   maxIntensity: 0.7
   minIntensity: 0
+  fadeInDuration: 1
+  fadeOutDuration: 2
+  onMaterial: {fileID: 2100000, guid: 763d547f29cebc443a26da20545010dd, type: 2}
+  offMaterial: {fileID: 2100000, guid: 26df91506bf83b343b8083c5322323ae, type: 2}
+  meshRenderer: {fileID: 23730418561615132}
 --- !u!1 &1165908937334492
 GameObject:
   m_ObjectHideFlags: 0
