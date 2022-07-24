@@ -38,6 +38,8 @@ public class InputActionBasedFirstPersonControllerInput : FirstPersonControllerI
 
     protected void Awake()
     {
+        DivideVector2ByDeltaTimeProcessor.Initialize();
+        
         _controls = new FirstPersonInputAction();
 
         // Hide the mouse cursor and lock it in the game window.

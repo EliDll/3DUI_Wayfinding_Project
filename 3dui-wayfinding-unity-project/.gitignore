@@ -54,6 +54,8 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+WebGL Builds/
+Windows Builds/
 
 # Crashlytics generated file
 crashlytics-build.properties
