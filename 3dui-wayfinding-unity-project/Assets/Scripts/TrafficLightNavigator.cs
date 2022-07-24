@@ -21,8 +21,10 @@ namespace Navigator
 
         public override void ChangeDirection(Direction direction)
         {
-            // Yellow light before changing
+            ResetToDefault();
             base.ChangeDirection(direction);
+
+            // Yellow light before changing
 
             /*StartCoroutine(YellowTimer(() =>
             {

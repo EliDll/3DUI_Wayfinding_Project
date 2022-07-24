@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Enums;
 using PathFinder;
+using UniRx;
 using UnityEngine;
 
 namespace Navigator
@@ -27,8 +28,12 @@ namespace Navigator
     {
         [SerializeField] private float maxDistanceToCorner = 10f;
         [SerializeField] private float colliderRange = 20f;
+        
 
         [SerializeField] protected Direction currentDirection;
+
+        private ICharacterSignals _characterSignals;
+        
         protected MeshRenderer meshRenderer;
 
         private Transform _player;
@@ -36,13 +41,23 @@ namespace Navigator
         
         private void Awake()
         {
+            _player = PathFinderManager.Instance.player;
             meshRenderer = GetComponent<MeshRenderer>();
+            _characterSignals = _player.GetComponent<ICharacterSignals>();
         }
 
         protected virtual void Start()
         {
             ResetToDefault();
-            _player = PathFinderManager.Instance.player;
+            _characterSignals.IsEffects.Where(isEffects => isEffects == false).Subscribe(_ =>
+            {
+                if (_active)
+                {
+                    PathFinderManager.Instance.CurrentPathChangedEvent -= HandleCurrentPathChanged;
+                    _active = false;
+                    ResetToDefault();
+                }
+            }).AddTo(this);
         }
 
         protected virtual void Update()
@@ -57,10 +72,22 @@ namespace Navigator
         
         private void UpdateActivation()
         {
-            float dist = Vector3.Distance(_player.position, transform.position);
+            if (!_characterSignals.IsEffects.Value)
+            {
+                return;
+            }
             
+            float dist = Vector3.Distance(_player.position, transform.position);
+            float tooClose = colliderRange / 2;
+
+            // Player is too close
+            if (dist < tooClose && _active)
+            {
+                _active = false;
+                PathFinderManager.Instance.CurrentPathChangedEvent -= HandleCurrentPathChanged;
+            }
             // Player entered range
-            if (dist < colliderRange && !_active)
+            else if (dist > tooClose && dist < colliderRange && !_active)
             {
                 _active = true;
                 PathFinderManager.Instance.CurrentPathChangedEvent += HandleCurrentPathChanged;
@@ -78,6 +105,7 @@ namespace Navigator
         private void UpdateDirectionOfNavigator()
         {
             var position = transform.position;
+
             var closestPathNode = FindClosestPathNodeAngleForPosition(position, transform.forward);
 
             Direction direction = closestPathNode.pathAngle switch
@@ -103,6 +131,7 @@ namespace Navigator
 
             ChangeDirection(direction);
         }
+        
         
         private int FindClosestCorner(Vector3 position)
         {
