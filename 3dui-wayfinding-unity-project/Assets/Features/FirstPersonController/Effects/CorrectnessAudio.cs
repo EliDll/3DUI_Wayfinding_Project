@@ -17,11 +17,14 @@ public class CorrectnessAudio : MonoBehaviour
     
     [SerializeField] private AudioSource _audioSource;
     
-    private float _intensityChangeSpeed = 0.1f;
+    private float _moveChangeSpeed = 0.1f;
+    private float _minMovePitch = 0.4f;
+    private float _maxMovePitch = 0.9f;
+    private float _currentMovePitch = 0.9f;
 
-    private float _startPitch = 1f;
-
-    private float _lowPitch = 0.5f;
+    private float _currentLookPitch = 0.1f;
+    private float _maxLookPitch = 0.1f;
+    private float _minLookPitch = 0f;
     
     // Start is called before the first frame update
     void Start()
@@ -30,21 +33,29 @@ public class CorrectnessAudio : MonoBehaviour
         {
             if (_characterSignals.IsEffects.Value)
             {
-                float scaledCorrectness =
-                    (_hologramPath.CorrectnessScale.Value * (_startPitch - _lowPitch)) + _lowPitch;
-                _audioSource.pitch = Mathf.Lerp(_audioSource.pitch, scaledCorrectness,
-                    w.magnitude * _intensityChangeSpeed);
+                float newMovePitch = Mathf.Lerp(_minMovePitch, _maxMovePitch, _hologramPath.CorrectnessScale.Value);
+                _currentMovePitch = Mathf.Lerp(_currentMovePitch, newMovePitch,
+                    w.magnitude * _moveChangeSpeed);
+                _audioSource.pitch = _currentLookPitch + _currentMovePitch;
             }
         }).AddTo(this);
         _characterSignals.IsEffects.Where(isEffects => isEffects == false).Subscribe(_ =>
         {
-            _audioSource.pitch = _startPitch;
+            _audioSource.pitch = 1f;
+        }).AddTo(this);
+        _hologramPath.CorrectnessScale.Subscribe(v =>
+        {
+            if (_characterSignals.IsEffects.Value)
+            {
+                _currentLookPitch = Mathf.Lerp(_minLookPitch, _maxLookPitch, v);
+                _audioSource.pitch = _currentLookPitch + _currentMovePitch;
+            }
         }).AddTo(this);
     }
 
     void Awake()
     {
-        _audioSource.pitch = _startPitch;
+        _audioSource.pitch = _currentLookPitch + _currentMovePitch;
         _characterSignals =
             characterSignalsInterfaceTarget.GetComponent<ICharacterSignals>();
     }
