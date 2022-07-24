@@ -16,10 +16,21 @@ public class CorrectnessPostEffects : MonoBehaviour
     private ICharacterSignals _characterSignals;
     [SerializeField] private Volume _volume;
 
-	private int _minSaturation = -50;
-	private int _maxSaturation = 0;
+	private int _minMoveSaturation = -30;
+	private int _maxMoveSaturation = 0;
+	private float _minMoveVignette = 0f;
+	private float _maxMoveVignette = 0.3f;
+	private float _currentMoveVignette = 0f;
+	private int _currentMoveSaturation = 0;
 
-    private float _intensityChangeSpeed = 0.1f;
+	private float _currentLookVignette = 0f;
+	private int _currentLookSaturation = 0;
+	private float _maxLookVignette = 0.1f;
+	private int _maxLookSaturation = 0;
+	private float _minLookVignette = 0f;
+	private int _minLookSaturation = -10;
+
+    private float _moveChangeSpeed = 0.1f;
     private Vignette _vignette;
 	private ColorAdjustments _colorAdjustments;
     
@@ -28,24 +39,36 @@ public class CorrectnessPostEffects : MonoBehaviour
     {
         _volume.profile.TryGet<Vignette>(out _vignette);
         _volume.profile.TryGet<ColorAdjustments>(out _colorAdjustments);
-        _vignette.intensity.value = 0f;
-		_colorAdjustments.saturation.value = _maxSaturation;
+		_vignette.intensity.value = _currentMoveVignette + _currentLookVignette;
+		_colorAdjustments.saturation.value = _currentMoveSaturation + _currentLookSaturation;
         _characterSignals.Moved.Subscribe(w =>
         {
             if (_characterSignals.IsEffects.Value)
             {
-                float newVignette = (1.0f - _hologramPath.CorrectnessScale.Value) * 0.4f;
-                _vignette.intensity.value = Mathf.Lerp(_vignette.intensity.value, newVignette,
-                    w.magnitude * _intensityChangeSpeed);
-                int newSaturation = (int)Mathf.Lerp(_minSaturation, _maxSaturation, _hologramPath.CorrectnessScale.Value);
-                _colorAdjustments.saturation.value = Mathf.Lerp(_colorAdjustments.saturation.value, newSaturation,
-                    w.magnitude * _intensityChangeSpeed);
+                float newMoveVignette = Mathf.Lerp(_maxMoveVignette, _minMoveVignette, _hologramPath.CorrectnessScale.Value);
+                _currentMoveVignette = Mathf.Lerp(_currentMoveVignette, newMoveVignette,
+                    w.magnitude * _moveChangeSpeed);
+				_vignette.intensity.value = _currentMoveVignette + _currentLookVignette;
+                int newMoveSaturation = (int)Mathf.Lerp(_minMoveSaturation, _maxMoveSaturation, _hologramPath.CorrectnessScale.Value);
+                _currentMoveSaturation = (int)Mathf.Lerp(_currentMoveSaturation, newMoveSaturation,
+                    w.magnitude * _moveChangeSpeed);
+				_colorAdjustments.saturation.value = _currentMoveSaturation + _currentLookSaturation;
+            }
+        }).AddTo(this);
+        _hologramPath.CorrectnessScale.Subscribe(v =>
+        {
+            if (_characterSignals.IsEffects.Value)
+            {
+                _currentLookVignette = Mathf.Lerp(_maxLookVignette, _minLookVignette, v);
+                _currentLookSaturation = (int)Mathf.Lerp(_minLookSaturation, _maxLookSaturation, v);
+				_vignette.intensity.value = _currentMoveVignette + _currentLookVignette;
+				_colorAdjustments.saturation.value = _currentMoveSaturation + _currentLookSaturation;
             }
         }).AddTo(this);
         _characterSignals.IsEffects.Where(isEffects => isEffects == false).Subscribe(_ =>
         {
             _vignette.intensity.value = 0f;
-            _colorAdjustments.saturation.value = _maxSaturation;
+            _colorAdjustments.saturation.value = 0;
         }).AddTo(this);
     }
 
