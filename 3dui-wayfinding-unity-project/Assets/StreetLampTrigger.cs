@@ -24,6 +24,7 @@ public class StreetLampTrigger : MonoBehaviour
     // flags to only run latest triggered coroutine
     bool stopFadeOut = false;
     bool stopFadeIn = false;
+    bool _active = true;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +37,7 @@ public class StreetLampTrigger : MonoBehaviour
             this.targetObject.active = isEffects;
             this.light.intensity = 0;
             if (!isEffects) setOffTexture();
+            _active = isEffects;
         }).AddTo(this);
     }
 
@@ -53,6 +55,7 @@ public class StreetLampTrigger : MonoBehaviour
 
     private void setOnTexture()
     {
+        if (!_active) return;
         Material[] mats = meshRenderer.materials;
         meshRenderer.materials = new Material[] { mats[0], onMaterial };
     }
