@@ -871,14 +871,14 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 1
-      scalar: 14
+      scalar: 21
       minScalar: 10
       maxCurve:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 1
+          value: 0.78378296
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -887,12 +887,12 @@ ParticleSystem:
           outWeight: 0
         - serializedVersion: 3
           time: 1
-          value: 0.5
-          inSlope: -0.87401146
-          outSlope: -0.87401146
+          value: 0.32432556
+          inSlope: -0.22884414
+          outSlope: -0.22884414
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.2071842
+          inWeight: 0.20076978
           outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
@@ -4891,7 +4891,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.02e-43, y: 0, z: 0, w: -6.0513425e-24}
+  m_BoundingSphereOverride: {x: 2.5e-44, y: 8.0747e-41, z: 1.02e-43, w: NaN}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
