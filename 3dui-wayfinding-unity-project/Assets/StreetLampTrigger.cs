@@ -1,5 +1,7 @@
+using PathFinder;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
 public class StreetLampTrigger : MonoBehaviour
@@ -16,6 +18,9 @@ public class StreetLampTrigger : MonoBehaviour
     [SerializeField] private Material offMaterial;
     [SerializeField] private MeshRenderer meshRenderer;
 
+    private ICharacterSignals _characterSignals;
+    private Transform _player;
+
     // flags to only run latest triggered coroutine
     bool stopFadeOut = false;
     bool stopFadeIn = false;
@@ -25,13 +30,26 @@ public class StreetLampTrigger : MonoBehaviour
     {
         this.targetObject.active = true;
         this.light.intensity = 0;
+
+        _characterSignals.IsEffects.Subscribe(isEffects =>
+        {
+            this.targetObject.active = isEffects;
+            this.light.intensity = 0;
+            if (!isEffects) setOffTexture();
+        }).AddTo(this);
     }
 
     // Update is called once per frame
     void Update()
     {
 
-    } 
+    }
+
+    private void Awake()
+    {
+        _player = PathFinderManager.Instance.player;
+        _characterSignals = _player.GetComponent<ICharacterSignals>();
+    }
 
     private void setOnTexture()
     {

@@ -33,11 +33,11 @@ namespace Navigator
 
         [SerializeField] protected Direction currentDirection;
 
+        private Transform _player;
         private ICharacterSignals _characterSignals;
         
         protected MeshRenderer meshRenderer;
 
-        private Transform _player;
         private bool _active = false;
         
         private void Awake()
