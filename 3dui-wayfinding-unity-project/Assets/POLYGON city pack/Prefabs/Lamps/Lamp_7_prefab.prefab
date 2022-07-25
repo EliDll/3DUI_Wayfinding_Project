@@ -62,7 +62,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObject: {fileID: 1165908937334492}
   light: {fileID: 108630166504307290}
-  maxIntensity: 0.7
+  maxIntensity: 0.3
   minIntensity: 0
   fadeInDuration: 1
   fadeOutDuration: 2
