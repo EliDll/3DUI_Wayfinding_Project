@@ -32,6 +32,8 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float runSpeed = 10f;
     [SerializeField] private float jumpSpeed = 10f;
+    [SerializeField] private float maxVertVelocity = 10f;
+    [SerializeField] private float maxFallingVelocity = 30f;
     [SerializeField] private float stickToGroundForceMagnitude = 5f;
 
     [Header("Look Properties")]
@@ -133,7 +135,7 @@ public class FirstPersonController : MonoBehaviour, ICharacterSignals
         else if (!wasGrounded)
         {
             // we are in the air --> apply gravity
-            verticalVelocity = _characterController.velocity.y + (Physics.gravity.y * Time.deltaTime * 3.0f);
+            verticalVelocity = Math.Clamp(_characterController.velocity.y + (Physics.gravity.y * Time.deltaTime * 3.0f), -maxFallingVelocity, maxVertVelocity);
         }
         else
         {
