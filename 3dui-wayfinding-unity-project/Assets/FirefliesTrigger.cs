@@ -19,7 +19,7 @@ public class FirefliesTrigger : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        this.particleSystem.enableEmission = false;
+        this.particleSystem.Stop();
         this.light.intensity = 0;
     }
 
@@ -33,7 +33,7 @@ public class FirefliesTrigger : MonoBehaviour
     {
         stopFadeOut = true;
         stopFadeIn = false;
-        this.particleSystem.enableEmission = true;
+        this.particleSystem.Play();
         this.StartCoroutine(fadeIn(fadeInDuration));
     }
 
@@ -41,7 +41,7 @@ public class FirefliesTrigger : MonoBehaviour
     {
         stopFadeIn = true;
         stopFadeOut = false;
-        this.particleSystem.enableEmission = false;
+        this.particleSystem.Stop();
         this.StartCoroutine(fadeOut(fadeOutDuration));
     }
 
