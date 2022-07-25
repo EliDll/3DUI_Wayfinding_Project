@@ -155,20 +155,22 @@ public class HologramPath : MonoBehaviour
         {
             targetPoint = target.position;
         }
-
-        Vector3 firstCorner = path[0];
-        Vector3 secondCorner = path[1];
-        float dist = Vector3.Distance(player.position, firstCorner);
-        
-        if (dist < _cornerCutOff)
-        {
-            targetPoint = Vector3.Lerp(secondCorner, firstCorner, dist / _cornerCutOff);
-        }
         else
         {
-            targetPoint = firstCorner;
+            Vector3 firstCorner = path[0];
+            Vector3 secondCorner = path[1];
+            float dist = Vector3.Distance(player.position, firstCorner);
+        
+            if (dist < _cornerCutOff)
+            {
+                targetPoint = Vector3.Lerp(secondCorner, firstCorner, dist / _cornerCutOff);
+            }
+            else
+            {
+                targetPoint = firstCorner;
+            }
         }
-
+        
         Vector3 targetDirection = targetPoint - player.position;
         targetDirection.y = 0;
         _correctnessScale.Value = Vector3.Dot(player.forward, targetDirection.normalized) * 0.5f + 0.5f;
