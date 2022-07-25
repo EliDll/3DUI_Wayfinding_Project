@@ -27,8 +27,9 @@ namespace Navigator
     public abstract class NavigatorBase : MonoBehaviour
     {
         [SerializeField] private float maxDistanceToCorner = 10f;
-        [SerializeField] private float colliderRange = 20f;
-        
+        [SerializeField] private float maxTriggerRange = 20f;
+        [SerializeField] private float minTriggerRange = 10f;
+
 
         [SerializeField] protected Direction currentDirection;
 
@@ -78,22 +79,22 @@ namespace Navigator
             }
             
             float dist = Vector3.Distance(_player.position, transform.position);
-            float tooClose = colliderRange / 2;
+            float tooClose = maxTriggerRange / 2;
 
-            // Player is too close
-            if (dist < tooClose && _active)
+            // Player is too close, don't change anymore
+            if (dist < minTriggerRange && _active)
             {
                 _active = false;
                 PathFinderManager.Instance.CurrentPathChangedEvent -= HandleCurrentPathChanged;
             }
             // Player entered range
-            else if (dist > tooClose && dist < colliderRange && !_active)
+            else if (dist > minTriggerRange && dist < maxTriggerRange && !_active)
             {
                 _active = true;
                 PathFinderManager.Instance.CurrentPathChangedEvent += HandleCurrentPathChanged;
             }
             // Player exited range
-            else if(dist > colliderRange && _active)
+            else if(dist > maxTriggerRange && _active)
             {
                 _active = false;
                 PathFinderManager.Instance.CurrentPathChangedEvent -= HandleCurrentPathChanged;

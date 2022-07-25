@@ -49,7 +49,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxDistanceToCorner: 10
-  colliderRange: 20
+  maxTriggerRange: 20
+  minTriggerRange: 10
   currentDirection: 0
   Green: {fileID: 2516374052704601287}
   Yellow: {fileID: 7355686508732742319}
@@ -105,6 +106,11 @@ PrefabInstance:
         type: 3}
       propertyPath: blendDistance
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846906080722838799, guid: f5f7d01160719c840a6b1e3014440235,
+        type: 3}
+      propertyPath: minTriggerRange
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7396983076266981559, guid: f5f7d01160719c840a6b1e3014440235,
         type: 3}
@@ -238,6 +244,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsGlobal
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846906080722838799, guid: f5f7d01160719c840a6b1e3014440235,
+        type: 3}
+      propertyPath: minTriggerRange
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1846906080722838799, guid: f5f7d01160719c840a6b1e3014440235,
         type: 3}
@@ -381,6 +392,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsGlobal
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1846906080722838799, guid: f5f7d01160719c840a6b1e3014440235,
+        type: 3}
+      propertyPath: minTriggerRange
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1846906080722838799, guid: f5f7d01160719c840a6b1e3014440235,
         type: 3}

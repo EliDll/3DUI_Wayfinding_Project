@@ -73,7 +73,6 @@ namespace Navigator
 
         public override void ResetToDefault()
         {
-            if (cooldown) { return; } else { cooldown = true; }
             base.ResetToDefault();
             meshRenderer.material = defaultMaterial;
         }

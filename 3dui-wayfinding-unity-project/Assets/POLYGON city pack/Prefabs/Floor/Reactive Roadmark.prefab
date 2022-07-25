@@ -144,10 +144,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxDistanceToCorner: 10
-  colliderRange: 30
+  maxTriggerRange: 20
+  minTriggerRange: 5
   currentDirection: 0
   turnLeftMaterial: {fileID: 2100000, guid: fd32ed0b1467e8345a6cba5f0c106301, type: 2}
   turnRightMaterial: {fileID: 2100000, guid: 7dc2581fbda060444ba583f38443a9e7, type: 2}
   goStraightMaterial: {fileID: 2100000, guid: 8e1758fa5d394e14489e5bcfc853922b, type: 2}
   turnBackMaterial: {fileID: 2100000, guid: dcfc394a3602f0c40b420aa2c8042e80, type: 2}
   defaultMaterial: {fileID: 2100000, guid: 8e1758fa5d394e14489e5bcfc853922b, type: 2}
+  throttleInterval: 1
