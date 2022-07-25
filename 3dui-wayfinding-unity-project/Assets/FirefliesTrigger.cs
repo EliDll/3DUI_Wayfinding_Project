@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using PathFinder;
 
 public class FirefliesTrigger : MonoBehaviour
 {
@@ -12,15 +14,34 @@ public class FirefliesTrigger : MonoBehaviour
     [SerializeField] private float fadeInDuration = 2;
     [SerializeField] private float fadeOutDuration = 5;
 
+    private ICharacterSignals _characterSignals;
+    private Transform _player;
+
     // flags to only run latest triggered coroutine
     bool stopFadeOut = false;
     bool stopFadeIn = false;
+
+    private void Awake()
+    {
+        _player = PathFinderManager.Instance.player;
+        _characterSignals = _player.GetComponent<ICharacterSignals>();
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         this.particleSystem.Stop();
         this.light.intensity = 0;
+
+        _characterSignals.IsEffects.Subscribe(isEffects =>
+        {
+            this.light.intensity = 0;
+            if (!isEffects)
+            {
+                this.particleSystem.Stop();
+            }
+        }).AddTo(this);
+
     }
 
     // Update is called once per frame
