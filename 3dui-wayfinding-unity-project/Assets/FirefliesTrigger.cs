@@ -13,6 +13,7 @@ public class FirefliesTrigger : MonoBehaviour
     [SerializeField] private float minIntensity = 0;
     [SerializeField] private float fadeInDuration = 2;
     [SerializeField] private float fadeOutDuration = 5;
+    [SerializeField] private float minPlayerDistance = 5;
 
     private ICharacterSignals _characterSignals;
     private Transform _player;
@@ -52,10 +53,13 @@ public class FirefliesTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        stopFadeOut = true;
-        stopFadeIn = false;
-        this.particleSystem.Play();
-        this.StartCoroutine(fadeIn(fadeInDuration));
+        if (_characterSignals.IsEffects.Value && Vector3.Distance(_player.transform.position, this.transform.position) > minPlayerDistance)
+        {
+            stopFadeOut = true;
+            stopFadeIn = false;
+            this.particleSystem.Play();
+            this.StartCoroutine(fadeIn(fadeInDuration));
+        }
     }
 
     private void OnTriggerExit(Collider other)
