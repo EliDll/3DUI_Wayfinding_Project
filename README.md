@@ -1,6 +1,6 @@
 ___________
 
-#### 3DUI_Wayfinding_Project
+#### 3DUI_Wayfinding_Project: Repository for the project work related to the 3DUI lecture @ TUM
 ___________
 
 # REGEN
